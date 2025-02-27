@@ -1,0 +1,26 @@
+#!/bin/sh
+# check for console.log in code
+commit=$(git show  | grep -E '^\+\S*.*console\.log.*')
+if test -n "$commit"
+	then
+		echo >&2 "Found console.log in code"
+
+		git show --name-only | grep \.ts | while read file
+		do 
+			grep -Hrn "console.log" $file
+		done
+		exit 1
+fi
+# Check for fmt in code
+commit=$(git show  | grep -E '^\+\S*.*fmt\.Print.*')
+if test -n "$commit"
+	then
+		echo >&2 "Found fmt.Print in code"
+
+		git show --name-only | grep \.go | while read file
+		do 
+			grep -Hrn "fmt.Prin" $file
+		done
+		exit 1
+fi
+exit 0
